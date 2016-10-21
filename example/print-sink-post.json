@@ -1,0 +1,8 @@
+{
+  "name": "franzy-connect-test-post-sink",
+  "config": {
+      "topics": "test-topic-print-sink",
+      "connector.class": "org.clojars.yanatan16.franzy.connect.example.PrintSinkConnector",
+      "print.prefix": "MYPREFIX"
+  }
+}
