@@ -4,7 +4,7 @@
 
 A clojurized kafka connect interface.
 
-This project aims to cover up all the java nonsense in a nice and clojure way. This library aims to help manage deferred completion of writes and retry logic.
+This project aims to cover up all the java nonsense in a nice and clojure way.
 
 ## Install
 
@@ -47,6 +47,7 @@ You can also make `ConfigDef`s:
 
 - SourceConnectors
 - Integration testing framework for testing your connectors
+- Use promises/deferreds to manage offset flushing in sinks
 
 ## License
 
