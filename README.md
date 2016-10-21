@@ -43,6 +43,8 @@ You can also make `ConfigDef`s:
                        :importance/medium "more docs")))
 ```
 
+Then uberjar it up and stick on a connector classpath to use! See [docker-compose.yml](/docker-compose.yml) for an example.
+
 ## TODO
 
 - SourceConnectors
@@ -51,7 +53,7 @@ You can also make `ConfigDef`s:
 
 ## Caveats
 
-- Always mount your jars in `/usr/share/java/kafka-connect-<something>/<something>.jar`
+- Always mount your uber jars in `/usr/share/java/kafka-connect-<something>/<something>.jar`. Other things might not get loaded by the magic kafka connect classpath loader
 - Don't use `clj-http`, its thread system doesn't like Kafka Connect. Try `aleph.http`
 
 ## License
