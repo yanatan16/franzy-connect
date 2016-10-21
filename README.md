@@ -19,7 +19,7 @@ You can make `SinkConnector`s:
 ``` clojure
 (require '[franzy.connect.sink :as sink])
 
-(c/make-sink
+(sink/make-sink
  org.very.long.package.path.MySink
 
  ;; Sink Task Methods
