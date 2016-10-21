@@ -1,4 +1,4 @@
-(defproject org.clojars.yanatan16/franzy-connect "0.1.1"
+(defproject org.clojars.yanatan16/franzy-connect "0.1.2-SNAPSHOT"
   :description "Clojure interface for making Kafka Connectors"
   :url "https://github.com/yanatan16/franzy-connect"
   :license {:name "MIT"
