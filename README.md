@@ -49,6 +49,11 @@ You can also make `ConfigDef`s:
 - Integration testing framework for testing your connectors
 - Use promises/deferreds to manage offset flushing in sinks
 
+## Caveats
+
+- Always mount your jars in `/usr/share/java/kafka-connect-<something>/<something>.jar`
+- Don't use `clj-http`, its thread system doesn't like Kafka Connect. Try `aleph.http`
+
 ## License
 
 See license in [LICENSE](/LICENSE) file.
