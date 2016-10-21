@@ -20,7 +20,8 @@ services:
     ports:
       - "8083:8083"
     volumes:
-      - "./target/franzy-connect-test-standalone.jar:/usr/share/java/franzy-connect-example/franzy-connect-example-standalone.jar:ro"
+      - "./target/franzy-connect-0.1.0-SNAPSHOT.jar:/usr/share/java/franzy-connect-test/franzy-connect-test-standalone.jar:ro"
+      - "../kafka-connect-slack-sink/target/kafka-connect-slack-sink-standalone.jar:/usr/share/java/kafka-connect-slack-sink/kafka-connect-slack-sink-standalone.jar:ro"
     links:
       - "kafka:kafka"
       - "zookeeper:zookeeper"

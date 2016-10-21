@@ -1,8 +1,8 @@
 (ns franzy.connect.sink
   (:require [franzy.connect.util :as u]
-            [franzy.connect.config :refer [config->clj]]
-            [franzy.common.configuration.codec :refer [encode]])
-  (:import [org.apache.kafka.connect.sink SinkConnector SinkTask]))
+            [franzy.connect.config :refer [config->clj clj->config]])
+  (:import [org.apache.kafka.connect.sink SinkConnector SinkTask]
+           [java.util ArrayList]))
 
 (defn put-1->put [put-1]
   (fn [state records]
@@ -51,7 +51,7 @@
 
      (gen-class
       :name ~(symbol (str class-prefix "Task"))
-      :extends org.apache.kafka.connect.sink.SinkTask
+      :extends ~'org.apache.kafka.connect.sink.SinkTask
       :state "state"
       :init "init"
       :constructors {[] []}
@@ -113,9 +113,10 @@
 
      (gen-class
       :name ~(symbol (str class-prefix "Connector"))
-      :extends org.apache.kafka.connect.sink.SinkConnector
-      :state "state"
-      :init "init"
+      :extends ~'org.apache.kafka.connect.sink.SinkConnector
+      :state ~'state
+      :init ~'init
+      :exposes {~'context {:get ~'context}}
       :constructors {[] []}
       :prefix "connector-")
 
@@ -123,21 +124,23 @@
        [[] (atom nil)])
 
      (defn ~'connector-start [this# props#]
-       (reset! (.state this#) (start# (config->clj props#) (.-context this#))))
+       (reset! (.state this#) (start# (config->clj props#) (.context this#))))
 
      (defn ~'connector-stop [this#]
-       (stop# (.state this#)))
+       (u/stateful-call (.state this#) stop#))
 
      (defn ~'connector-version [_#] (u/read-version))
 
      (defn ~'connector-config [_#] config-def#)
 
-     (defn ~'connector-taskClass [_#] (eval (quote ~(symbol (str class-prefix "Task")))))
+     (import ~(symbol (str class-prefix "Task")))
+     (defn ~'connector-taskClass [_#] ~(symbol (str class-prefix "Task")))
 
      (defn ~'connector-taskConfigs [this# max-tasks#]
-       (-> (task-configs# @(.state this#) max-tasks#)
-           (map encode)
-           vec))))
+       (->> (task-configs# @(.state this#) max-tasks#)
+            (map clj->config)
+            vec
+            ArrayList.))))
 
 (defmacro make-sink
   "Shorthand for (do (make-task ...) (make-connector ...))"

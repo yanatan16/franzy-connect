@@ -1,13 +1,16 @@
 (ns franzy.connect.config
-  (:require [clojure.walk :refer [keywordize-keys]])
+  (:require [clojure.walk :refer [keywordize-keys stringify-keys]])
   (:import [org.apache.kafka.common.config
             ConfigDef ConfigDef$Type ConfigDef$Importance
             ConfigDef$Width ConfigDef$Range
             ConfigDef$Recommender ConfigDef$ValidString
-            ConfigDef$Validator ConfigException]))
+            ConfigDef$Validator ConfigException]
+           [java.util HashMap]))
 
 (defn config->clj [c]
   (keywordize-keys (into {} c)))
+(defn clj->config [c]
+  (HashMap. (stringify-keys c)))
 
 (def kw->enum
   {:type/string ConfigDef$Type/STRING
