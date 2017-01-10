@@ -1,12 +1,6 @@
 (ns franzy.connect.util
-  (:require [clojure.java.io :as io]
-            [clojure.edn :as edn])
   (:import [java.util Map Set List]
            [org.apache.kafka.connect.sink SinkRecord]))
-
-(defn read-version []
-  (or (some-> (io/resource "project.clj") slurp edn/read-string (nth 2))
-      "unknown"))
 
 (defn java->clj [^Object o]
   (cond

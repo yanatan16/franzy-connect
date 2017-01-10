@@ -1,22 +1,17 @@
-(ns franzy.connect.sink
+(ns franzy.connect.source
   (:require [franzy.connect.util :as u]
             [franzy.connect.base :refer [make-connector make-base-task]])
-  (:import [org.apache.kafka.connect.sink SinkConnector SinkTask]))
+  (:import [org.apache.kafka.connect.source SourceConnector SourceTask]))
 
 (defmacro make-task
-  "Make an arbitrarily complex SinkTask
+  "Make an arbitrarily complex SourceTask
 
   Class prefix should be a full path. Connector will be appended onto it.
 
   Version should be a string.
 
-  The arguments should be a map of keywords to functions.
-
-  Sink Task-specific keys are:
-   :put (fn [state records]) Required. Returns: task state. This function should start the work of
-     pushing records to the remote database, but not necessarily block for completion.
-   :flush (fn [state offsets]) Optional. Returns: task state. This function should
-     block for completion of all writes. Offsets can mostly be ignored, but useful for establishing exactly once semantics.
+  Source Task-specific keys are:
+   :poll (fn [state on-records]) Required. Returns: new-state. Poll the remote database for records. Call on-records with any records found.
 
   Base Tasks may optionally have the following keys:
    :start (fn [config]) Returns: task state. This function should start any
@@ -31,30 +26,26 @@
      connector calles (.requestTaskReconfiguration)). It should stop any work being
      done for the topic-partitions being revoked."
 
-  [class-prefix version {:keys [put flush] :as args}]
+  [class-prefix version {:keys [poll] :as args}]
 
-  `(let [put# ~put
-         flush# ~(if flush flush `(fn [state# _#] state#))]
+  `(let [poll# ~poll]
 
      (make-base-task
       ~class-prefix
-      ~'org.apache.kafka.connect.sink.SinkTask
+      ~'org.apache.kafka.connect.source.SourceTask
       ~version
       ~args
 
-      (put [this# records#]
-           (u/stateful-call (.state this#) put# (map u/record->map records#)))
-
-      (flush [this# offsets#]
-             (u/stateful-call (.state this#)
-                              flush# offsets#)))))
+      (poll [this#]
+       (u/stateful-call (.state this#) poll#
+                             #(.onRecords (.context this#) %))))))
 
 
-(defmacro make-sink
+(defmacro make-source
   "Shorthand for (do (make-task ...) (make-connector ...))"
   [class-prefix version task & [connector]]
   `(do
      (make-task ~class-prefix ~version ~task)
      (make-connector ~class-prefix
-                     ~'org.apache.kafka.connect.sink.SinkConnector
+                     ~'org.apache.kafka.connect.source.SourceConnector
                      ~connector)))

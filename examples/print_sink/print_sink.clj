@@ -7,7 +7,7 @@
 
 (sink/make-sink
  franzy.connect.example.PrintSink
-
+ "0.1.0"
  {:start #(do (println :print-task :started %) %)
   :stop #(println :print-task :stopped %)
   :put-1 #(println :print-sink :put-1 (:print.prefix %1) %2)}
